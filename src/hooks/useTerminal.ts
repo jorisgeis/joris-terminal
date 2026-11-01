@@ -34,6 +34,12 @@ export function useTerminal() {
 
   useEffect(() => () => ctlRef.current?.abort(), []);
 
+  // Lets the stylesheet move a classic scrollbar into the page margin (see .log in global.css).
+  useLayoutEffect(() => {
+    const log = logRef.current;
+    if (log) log.style.setProperty('--sbw', log.offsetWidth - log.clientWidth + 'px');
+  }, []);
+
   const setBusy = (b: boolean) => {
     busyRef.current = b;
     setBusyState(b);

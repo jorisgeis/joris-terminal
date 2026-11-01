@@ -1,4 +1,5 @@
-/* Ported as-is from reference.html. Only addition: #root fills the page like body did. */
+/* Ported from reference.html. Additions: #root fills the page like body did, and the themed
+   chat scrollbar at the end. */
 :root {
   --bg: #ffffff;
   --panel: #ffffff;
@@ -161,7 +162,7 @@ a:hover {
   font-weight: 700;
   line-height: 1.05;
   white-space: pre;
-  overflow-x: auto;
+  overflow: hidden;
   font-size: clamp(7px, 1.5vw, 14px);
   margin: 0 0 18px;
 }
@@ -491,4 +492,31 @@ a:hover {
 }
 #root {
   height: 100%;
+}
+
+/* Chat scrollbar: thin and themed, sitting in the page margin so the card lines up with the
+   prompt. --sbw is the scrollbar's real width, measured in useTerminal (0 for overlay bars). */
+.log {
+  --sbw: 0px;
+  --sb-gap: 8px;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  margin-right: calc(-1 * (var(--sbw) + var(--sb-gap)));
+  padding-right: var(--sb-gap);
+}
+.log:hover {
+  scrollbar-color: var(--faint) transparent;
+}
+.menu {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+@media (max-width: 600px) {
+  .log {
+    --sb-gap: 0px;
+  }
+  .hints .wide {
+    display: none;
+  }
 }
