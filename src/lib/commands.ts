@@ -135,3 +135,28 @@ export function matchCommands(value: string): string[] {
   const first = value.trim().toLowerCase().split(' ')[0] ?? '';
   return COMMAND_NAMES.filter((c) => c.startsWith(first));
 }
+
+const clean = (partial: string) => partial.replace(/^\.?\//, '').toLowerCase();
+
+/** Files a partial "/cat" argument could mean: the path or the file name starts with it. */
+export function fileCandidates(partial: string): FilePath[] {
+  const q = clean(partial);
+  return PATHS.filter((p) => {
+    const path = p.toLowerCase();
+    return path.startsWith(q) || (path.split('/').pop() ?? '').startsWith(q);
+  });
+}
+
+/**
+ * Tab completion for "/cat <partial>", like a shell: the only match, or the longest prefix
+ * all matches share. Null when Tab can't add anything.
+ */
+export function completeFile(partial: string): string | null {
+  const found = fileCandidates(partial);
+  if (found.length === 1) return found[0] ?? null;
+  const q = clean(partial);
+  if (found.length < 2 || !found.every((p) => p.toLowerCase().startsWith(q))) return null;
+  let prefix: string = found[0] ?? '';
+  for (const p of found) while (!p.startsWith(prefix)) prefix = prefix.slice(0, -1);
+  return prefix.length > q.length ? prefix : null;
+}

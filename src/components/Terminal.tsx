@@ -1,14 +1,23 @@
 import { useEffect, type KeyboardEvent } from 'react';
+import { lineCount, type FilePath } from '../content/files';
 import type { TerminalState } from '../hooks/useTerminal';
-import { matchCommands } from '../lib/commands';
-import { CommandMenu } from './CommandMenu';
+import { COMMANDS, completeFile, fileCandidates, matchCommands } from '../lib/commands';
+import { CommandMenu, type MenuItem } from './CommandMenu';
 
-/** The input dock: "/" command menu, prompt, history and stop-on-Escape. */
+const CAT = /^\/cat\s+(\S*)$/i;
+
+/** The input dock: "/" command menu, file completion, prompt, history and stop-on-Escape. */
 export function Terminal({ t }: { t: TerminalState }) {
   const { value, setValue, menuOpen, setMenuOpen, sel, setSel, closeMenu, run, inputRef } = t;
 
-  const items =
+  const cat = CAT.exec(value);
+  const partial = cat?.[1] ?? '';
+  const files: FilePath[] = menuOpen && cat ? fileCandidates(partial) : [];
+  const commands =
     menuOpen && value.startsWith('/') && !value.includes(' ') ? matchCommands(value) : [];
+  const items: MenuItem[] = cat
+    ? files.map((p) => ({ label: p, hint: lineCount(p) + ' lines' }))
+    : commands.map((c) => ({ label: c, hint: COMMANDS[c]?.help ?? '' }));
   const menuOn = items.length > 0;
   const selIdx = Math.min(sel, items.length - 1);
 
@@ -18,12 +27,18 @@ export function Terminal({ t }: { t: TerminalState }) {
     }
   }, [inputRef]);
 
-  const pick = (c: string) => {
-    if (c === '/cat') {
-      setValue('/cat ');
-      closeMenu();
+  const openCat = (path = '') => {
+    setValue('/cat ' + path);
+    setSel(0);
+    setMenuOpen(true);
+  };
+
+  const pick = (label: string) => {
+    if (cat) run('/cat ' + label);
+    else if (label === '/cat') {
+      openCat();
       inputRef.current?.focus();
-    } else run(c);
+    } else run(label);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -41,15 +56,35 @@ export function Terminal({ t }: { t: TerminalState }) {
       e.preventDefault();
       return;
     }
+    if (e.key === 'Tab' && cat) {
+      // Like a shell: complete as far as the matches agree, then take the highlighted file.
+      const done = completeFile(partial);
+      if (done && done !== partial) openCat(done);
+      else if (menuOn && items[selIdx]) openCat(items[selIdx].label);
+      else setMenuOpen(true);
+      e.preventDefault();
+      return;
+    }
     if (menuOn && e.key === 'Tab') {
-      const m = items[selIdx];
-      if (m) setValue(m + (m === '/cat' ? ' ' : ''));
+      const m = items[selIdx]?.label;
+      if (m === '/cat') openCat();
+      else if (m) setValue(m);
       e.preventDefault();
       return;
     }
     if (menuOn && e.key === 'Enter') {
-      const c = items[selIdx];
-      if (c && value.trim() !== c && c !== '/cat') {
+      const c = items[selIdx]?.label;
+      if (cat && c && c !== partial) {
+        e.preventDefault();
+        run('/cat ' + c);
+        return;
+      }
+      if (!cat && c === '/cat') {
+        e.preventDefault();
+        openCat();
+        return;
+      }
+      if (!cat && c && value.trim() !== c) {
         e.preventDefault();
         run(c);
         return;
@@ -61,7 +96,7 @@ export function Terminal({ t }: { t: TerminalState }) {
 
   return (
     <div className="dock">
-      <CommandMenu items={items} sel={selIdx} onPick={pick} />
+      <CommandMenu label={cat ? 'Files' : 'Commands'} items={items} sel={selIdx} onPick={pick} />
       <form
         id="form"
         className="box"
@@ -99,7 +134,9 @@ export function Terminal({ t }: { t: TerminalState }) {
         </button>
       </form>
       <div className="hints">
-        <span>/ commands · ↑ history · esc stops</span>
+        <span>
+          / commands<span className="wide"> · tab completes</span> · ↑ history · esc stops
+        </span>
       </div>
     </div>
   );

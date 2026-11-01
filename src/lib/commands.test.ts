@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { COMMAND_NAMES, matchCommands, readFile, runCommand } from './commands';
+import {
+  COMMAND_NAMES,
+  completeFile,
+  fileCandidates,
+  matchCommands,
+  readFile,
+  runCommand,
+} from './commands';
 import type { Block } from './types';
 
 const ctx = { theme: 'light' as const };
@@ -85,5 +92,24 @@ describe('slash commands', () => {
   it('matches commands by prefix for the menu', () => {
     expect(matchCommands('/c')).toEqual(['/contact', '/cat', '/clear']);
     expect(matchCommands('/')).toEqual(COMMAND_NAMES);
+  });
+});
+
+describe('/cat file completion', () => {
+  it('completes a unique match by path or file name', () => {
+    expect(completeFile('vi')).toBe('visa.md');
+    expect(completeFile('groupera')).toBe('experience/groupera.md');
+    expect(completeFile('./stack')).toBe('stack.json');
+  });
+
+  it('extends to the prefix all matches share', () => {
+    expect(completeFile('exp')).toBe('experience/');
+    expect(fileCandidates('experience/')).toHaveLength(4);
+  });
+
+  it('returns null when Tab cannot add anything', () => {
+    expect(completeFile('experience/')).toBeNull();
+    expect(completeFile('nope')).toBeNull();
+    expect(completeFile('')).toBeNull();
   });
 });

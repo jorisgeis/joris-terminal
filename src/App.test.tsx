@@ -83,9 +83,38 @@ describe('App', () => {
     await user.type(input, '/ca');
     await user.keyboard('{Tab}');
     expect(input).toHaveValue('/cat ');
-    await user.type(input, 'visa{Enter}');
+    expect(screen.getByRole('listbox', { name: 'Files' })).toHaveTextContent('visa.md');
+    await user.type(input, 'vi');
+    await user.keyboard('{Tab}');
+    expect(input).toHaveValue('/cat visa.md');
+    await user.keyboard('{Enter}');
     expect(lastTurn(log)).toHaveTextContent('read_file visa.md');
     expect(lastTurn(log)).toHaveTextContent('J-1 Intern visa: what hosting involves');
+  });
+
+  it('completes shared folders first, then the highlighted file', async () => {
+    const { user, input, log } = setup();
+    await user.type(input, '/cat exp');
+    await user.keyboard('{Tab}');
+    expect(input).toHaveValue('/cat experience/');
+    const files = within(screen.getByRole('listbox', { name: 'Files' })).getAllByRole('option');
+    expect(files.map((o) => o.querySelector('.c')?.textContent)).toEqual([
+      'experience/arztkonsultation.md',
+      'experience/nova-digital.md',
+      'experience/groupera.md',
+      'experience/buildnext.md',
+    ]);
+    await user.keyboard('{ArrowDown}{ArrowDown}{Tab}');
+    expect(input).toHaveValue('/cat experience/groupera.md');
+    await user.keyboard('{Enter}');
+    expect(lastTurn(log)).toHaveTextContent('read_file experience/groupera.md');
+  });
+
+  it('opens a file by clicking it in the menu', async () => {
+    const { user, input, log } = setup();
+    await user.type(input, '/cat st');
+    await user.click(screen.getByRole('option', { name: /stack\.json/ }));
+    expect(lastTurn(log)).toHaveTextContent('read_file stack.json');
   });
 
   it('shows an error for a missing file', async () => {
