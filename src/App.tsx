@@ -52,7 +52,7 @@ export function App() {
         <SummaryCard />
         <p className="meta">
           Ask about my work below, or type <span style={{ color: 'var(--accent-ink)' }}>/</span> for
-          commands. Every answer is one I wrote.
+          commands.
         </p>
         <Suggestions onPick={t.run} />
         {t.turns.map((turn) => (

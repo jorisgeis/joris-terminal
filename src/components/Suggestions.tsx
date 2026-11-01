@@ -1,6 +1,6 @@
 import { track } from '../lib/track';
 
-const SUGGESTIONS = ['How does hosting work?', 'The streak system', 'Tech stack', '/help'];
+const SUGGESTIONS = ['Who is Joris?', 'The streak system', 'Tech stack', '/help'];
 
 export function Suggestions({ onPick }: { onPick: (text: string) => void }) {
   return (

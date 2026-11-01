@@ -37,6 +37,8 @@ const TABLE: [string, string][] = [
   ['The streak system', 'streak'],
   ['Tech stack', 'stack'],
   ['Can I see his resume?', 'resume'],
+  ['Who is Joris?', 'about'],
+  ['Does he like AI?', 'ai'],
 ];
 
 describe('route', () => {

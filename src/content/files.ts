@@ -5,7 +5,7 @@ import { stripPlaceholders } from '../lib/placeholders';
 function rawFiles(c: Config) {
   return {
     'README.md':
-      'Joris Geis, full-stack software engineer.\nZetel, Germany (CET). Enrolled in a B.S. in Information Systems at Hochschule Emden/Leer.\n2+ years building web apps with React, Next.js, TypeScript and Node.js in fully remote teams, including a 12-month full-time software engineering internship.\nBuilt a Duolingo-style streak system that cut churn 10% on a platform with 500+ users.\nLooking for: an on-site J-1 internship in the US, ' +
+      'Joris Geis, full-stack software engineer.\nZetel, Germany (CET). Enrolled in a B.S. in Information Systems at Hochschule Emden/Leer.\n2+ years building web apps with React, Next.js, TypeScript and Node.js in fully remote teams, including a 12-month full-time software engineering internship.\nBuilt a Duolingo-style streak system that cut churn 10% on a platform with 500+ users.\nLoves AI and is happy to be living through this fundamental change; he sees it as an opportunity.\nLooking for: an on-site J-1 internship in the US, ' +
       c.LENGTH +
       '.',
     'availability.md':

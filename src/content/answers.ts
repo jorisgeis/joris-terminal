@@ -131,9 +131,9 @@ export function buildAnswers(c: Config): AnswerRule[] {
       'buildnext',
     ],
     [
-      /\b(ai|llms?|gpt|openai|prompt\w*|agents?|machine learning)\b/i,
+      /\b(ai|llms?|gpt|openai|prompt\w*|agents?|machine learning|artificial intelligence)\b/i,
       ['stack.json', 'projects/this-portfolio.md'],
-      'He integrates OpenAI and other LLM APIs and does prompt engineering. The first version of this page ran a tool-calling LLM agent over these files.',
+      'He loves AI and is happy to be living through this fundamental change; he sees it as an opportunity. He integrates OpenAI and other LLM APIs and does prompt engineering. The first version of this page ran a tool-calling LLM agent over these files.',
       'ai',
     ],
     [
