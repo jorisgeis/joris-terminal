@@ -22,7 +22,11 @@ interface Command {
 export const HELP_FOOTER =
   '\nor ask in plain English, for example:\n  when can he start?\n  what did he build at groupera?\n  what does hosting him involve?\n  does he know python?';
 
-const out = (text: string, cls?: 'err' | 'd'): Block => ({ kind: 'out', text, ...(cls && { cls }) });
+const out = (text: string, cls?: 'err' | 'd'): Block => ({
+  kind: 'out',
+  text,
+  ...(cls && { cls }),
+});
 
 function cat(path: FilePath): Block[] {
   return [
@@ -94,7 +98,10 @@ export const COMMANDS: Record<string, Command> = {
       try {
         const f = readFile(arg);
         return {
-          blocks: [{ kind: 'tool', name: 'read_file', arg: f.path, result: 'read' }, out(f.content)],
+          blocks: [
+            { kind: 'tool', name: 'read_file', arg: f.path, result: 'read' },
+            out(f.content),
+          ],
         };
       } catch (e) {
         return { blocks: [out((e as Error).message, 'err')] };

@@ -5,11 +5,7 @@ export function Linkified({ text }: { text: string }) {
     <>
       {linkify(text).map((s, i) =>
         s.href ? (
-          <a
-            key={i}
-            href={s.href}
-            {...(s.external && { target: '_blank', rel: 'noopener' })}
-          >
+          <a key={i} href={s.href} {...(s.external && { target: '_blank', rel: 'noopener' })}>
             {s.text}
           </a>
         ) : (
