@@ -142,12 +142,34 @@ describe('App', () => {
     expect(input).toHaveValue('');
   });
 
-  it('toggles the theme from the header and remembers it', async () => {
-    const { user, log } = setup();
-    await user.click(screen.getByRole('button', { name: 'theme' }));
+  it('switches themes without changing a draft or adding a conversation turn', async () => {
+    const { user, input, log } = setup();
+    const toggle = screen.getByRole('switch', { name: 'Dark theme' });
+    await user.type(input, 'my unfinished question');
+    await user.click(toggle);
+    expect(toggle).toBeChecked();
     expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
     expect(localStorage.getItem('jg-theme')).toBe('dark');
+    expect(input).toHaveValue('my unfinished question');
+    expect(log.querySelector('.turn')).toBeNull();
+    expect(toggle).toHaveFocus();
+    await user.keyboard(' ');
+    expect(toggle).not.toBeChecked();
+    expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+    expect(localStorage.getItem('jg-theme')).toBe('light');
+  });
+
+  it('keeps the switch in sync with /theme commands', async () => {
+    const { user, input, log } = setup();
+    const toggle = screen.getByRole('switch', { name: 'Dark theme' });
+    await user.type(input, '/theme{Enter}');
+    expect(toggle).toBeChecked();
     expect(lastTurn(log)).toHaveTextContent('theme: dark');
+    await user.click(toggle);
+    expect(toggle).not.toBeChecked();
+    await user.type(input, '/theme{Enter}');
+    expect(toggle).toBeChecked();
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
   });
 
   it('/clear removes every turn', async () => {

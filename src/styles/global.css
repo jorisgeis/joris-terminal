@@ -119,6 +119,7 @@ a:hover {
 .top nav {
   display: flex;
   gap: 18px;
+  align-items: center;
   flex-wrap: wrap;
 }
 .top a,
@@ -134,6 +135,45 @@ a:hover {
 .top a:hover,
 .top button:hover {
   color: var(--ink);
+}
+.top .theme-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 80px;
+  height: 44px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  flex-shrink: 0;
+}
+.theme-switch-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--user-bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.theme-switch[aria-checked='true'] .theme-switch-thumb {
+  transform: translateX(36px);
+}
+.theme-switch svg {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.theme-switch[aria-checked='false'] svg:first-of-type,
+.theme-switch[aria-checked='true'] svg:last-of-type {
+  color: var(--accent-ink);
+}
+.top .theme-switch:hover {
+  border-color: var(--faint);
 }
 .status {
   display: flex;

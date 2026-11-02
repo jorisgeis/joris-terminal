@@ -21,6 +21,15 @@ the page runs anywhere, costs nothing to host, and nothing a visitor types leave
 only network requests are to Google Fonts. Analytics go through an optional `track()` hook that
 calls `window.plausible` if it exists, and it never sends what anyone typed.
 
+## Appearance
+
+The header's sun/moon switch changes the theme without adding a conversation turn or clearing
+an unfinished question. It stays in sync with `/theme` and remembers the choice in this browser.
+Before a choice is saved, the site follows the system theme.
+
+The terminal-prompt favicon lives in `public/favicon.svg`. It uses a transparent background and
+adapts to the browser's system color scheme so it remains visible in light and dark tabs.
+
 ## Run it
 
 Requires Node 20 or newer.

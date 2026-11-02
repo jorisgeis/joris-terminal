@@ -15,6 +15,7 @@ export function useTerminal() {
   const [value, setValue] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [sel, setSel] = useState(0);
+  const [theme, setTheme] = useState(currentTheme);
 
   const busyRef = useRef(false);
   const ctlRef = useRef<AbortController | null>(null);
@@ -33,6 +34,19 @@ export function useTerminal() {
   }, [turns]);
 
   useEffect(() => () => ctlRef.current?.abort(), []);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const syncTheme = () => setTheme(currentTheme());
+    media.addEventListener('change', syncTheme);
+    return () => media.removeEventListener('change', syncTheme);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    const next = currentTheme() === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    setTheme(next);
+  }, []);
 
   // Lets the stylesheet move a classic scrollbar into the page margin (see .log in global.css).
   useLayoutEffect(() => {
@@ -122,7 +136,10 @@ export function useTerminal() {
       if (text.startsWith('/')) {
         const res = runCommand(text, { theme: currentTheme() });
         if (res.effect?.type === 'clear') return setTurns([]);
-        if (res.effect?.type === 'theme') applyTheme(res.effect.next);
+        if (res.effect?.type === 'theme') {
+          applyTheme(res.effect.next);
+          setTheme(res.effect.next);
+        }
         return add(res.blocks);
       }
       if (/^sudo\s+hire\s+joris/i.test(text)) {
@@ -173,6 +190,8 @@ export function useTerminal() {
   return {
     turns,
     busy,
+    theme,
+    toggleTheme,
     value,
     setValue,
     menuOpen,
